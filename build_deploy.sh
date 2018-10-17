@@ -1,5 +1,10 @@
 #!/bin/bash
 
+export region="ap-southeast-2"
+aws configure set region $region
+export AWS_REGION=$region
+export AWS_DEFAULT_REGION=$region
+export domainName="mc.bofh.net.au"
 
 # aws s3api create-bucket --acl private --bucket $domainName || true
 # aws s3api put-bucket-versioning --bucket $domainName --versioning-configuration Status=Enabled || true

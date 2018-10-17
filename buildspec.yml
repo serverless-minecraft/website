@@ -1,6 +1,9 @@
 version: 0.2
 
 phases:
+  install:
+    commands:
+      - command -v awsmobile >/dev/null 2>&1 || npm install -g awsmobile-cli
   build:
     commands:
       - ./build_deploy.sh
