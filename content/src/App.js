@@ -20,7 +20,7 @@ Amplify.configure({
 class Toggle extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {isToggleOn: false, buttonText: 'LAUNCH'};
+    this.state = {isToggleOn: props.running, buttonText: props.running ? 'RUNNING' : 'LAUNCH'};
 
     // This binding is necessary to make `this` work in the callback
     this.handleClick = this.handleClick.bind(this);
@@ -40,7 +40,7 @@ class Toggle extends React.Component {
         });
         ecs.runTask({
           cluster: 'minecraft-cluster',
-          taskDefinition: this.props.id,
+          taskDefinition: this.props.id + '-FARGATE',
           launchType: 'FARGATE',
           networkConfiguration: {
             awsvpcConfiguration: {
@@ -72,12 +72,12 @@ class Toggle extends React.Component {
   }
 }
 
-class RunningServers extends Component {
+class Servers extends Component {
   constructor(props) {
     super(props);
-    this.state = { data: [], error: null };
+    this.state = { running: [], available: [], error: null };
   }
-
+  
   componentDidMount() {
     Auth.currentCredentials()
       .then(credentials => {
@@ -95,61 +95,26 @@ class RunningServers extends Component {
               tasks: data.taskArns
             }).promise()
             .then(descs => {
-              this.setState({ data: descs.tasks });
-              this.props.storeRunning(descs.tasks);
+              this.setState({ running: descs.tasks.map(task => task.group.replace('-FARGATE', '').replace('task:', '').replace('family:', '')) });
             });
+            ecs.listTaskDefinitionFamilies({ status: 'ACTIVE' }).promise()
+              .then(data => this.setState({ available: data.families.map(family => family.replace('-FARGATE', '')) }))
+              .catch(error => this.setState({ error: error }));
           })
-          .catch(error => this.setState({ error: error }))
+          .catch(error => this.setState({ error: error }));
       });
   }
-
+  
   render() {
     if (this.state.error) {
       return <p>Error: {this.state.error}</p>;
     }
     return (
       <div>
-        Running Servers:
-        <ul>
-          {this.state.data.map(task => (
-            <li>{task.group.replace('-FARGATE', '').replace('task:', '')}</li>
-          ))}
-        </ul>
-      </div>
-    );
-  }
-}
-
-class AvailableServers extends Component {
-  constructor(props) {
-    super(props);
-    this.state = { data: [], error: null, running: props.servers };
-  }
-
-  componentDidMount() {
-    Auth.currentCredentials()
-      .then(credentials => {
-        const ecs = new ECS({
-          credentials: Auth.essentialCredentials(credentials),
-          region: REGION
-        });
-        ecs.listTaskDefinitionFamilies({ status: 'ACTIVE' }).promise()
-          .then(data => this.setState({ data: data.families }))
-          .catch(error => this.setState({ error: error }));
-      })
-  }
-
-  render() {
-    if (this.state.error) {
-      return <p>Error: {this.state.error}</p>;
-    }
-    return (
-      <div>
-        Available Servers:<br />
-        {this.state.data.map(family => {
-          // if family not in props.servers statement here
-          return <div>{family.replace('-FARGATE', '')} <Toggle id={family} /></div>
-          })}
+        Servers:<br />
+        {this.state.available.map(family => {
+          return <div>{family} <Toggle id={family} running={this.state.running.some(item => family == item)} /></div>;
+        })}
       </div>
     );
   }
@@ -158,11 +123,11 @@ class AvailableServers extends Component {
 class App extends Component {
   constructor(props) {
     super(props);
-    this.state = { data: [], error: null };
+    this.state = { data: [], error: null, servers: [] };
   }
   
   storeRunning(servers) {
-    this.setState({ servers: servers })
+    this.setState({ servers: servers });
   }
   
   render() {
@@ -173,8 +138,7 @@ class App extends Component {
           <h1 className="App-title">Minecraft Manager</h1>
         </header>
         <p className="App-intro">
-          <RunningServers storeRunning={this.storeRunning} />
-          <AvailableServers running={this.state.servers} />
+          <Servers />
         </p>
       </div>
     );
