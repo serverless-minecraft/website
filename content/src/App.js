@@ -113,7 +113,7 @@ class Servers extends Component {
       <div>
         Servers:<br />
         {this.state.available.map(family => {
-          return <div>{family} <Toggle id={family} running={this.state.running.some(item => family == item)} /></div>;
+          return <div>{family} <Toggle id={family} running={this.state.running.some(item => family === item)} /></div>;
         })}
       </div>
     );
