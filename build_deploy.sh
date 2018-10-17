@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -exu
 
 export region="ap-southeast-2"
 aws configure set region $region
@@ -9,7 +9,7 @@ export domainName="mc.bofh.net.au"
 # aws s3api create-bucket --acl private --bucket $domainName || true
 # aws s3api put-bucket-versioning --bucket $domainName --versioning-configuration Status=Enabled || true
 # aws s3 website s3://$domainName/ --index-document index.html --error-document error.html
-cd content && npm run build && aws s3 sync ./build s3://$domainName/ --cache-control max-age=0
+cd content && npm install && npm run build && aws s3 sync ./build s3://$domainName/ --cache-control max-age=0
 
 # Invalidating the index to be sure we're not caching - assumes one distribution
 DISTRIBUTIONID=`aws cloudfront list-distributions --query 'DistributionList.Items[0].Id' --output text`
