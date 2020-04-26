@@ -44,7 +44,7 @@ class Toggle extends React.Component {
           launchType: 'FARGATE',
           networkConfiguration: {
             awsvpcConfiguration: {
-              subnets: ['subnet-24281f43', 'subnet-4e456507'],
+              subnets: ['subnet-041a86dd8c48083f1', 'subnet-08fdafbe8e4e2637c'],
               assignPublicIp: 'ENABLED'
             }
           }
