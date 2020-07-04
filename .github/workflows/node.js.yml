@@ -55,5 +55,7 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
     - run: npm update
+    - run: npm run build --if-present
+    - run: npm test
     - name: Create Pull Request
       uses: peter-evans/create-pull-request@v2
