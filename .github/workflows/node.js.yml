@@ -26,5 +26,5 @@ jobs:
     - run: npm test
     - run: pip install git-pull-request
     - run: git branch auto-patch
-    - run: git commit -a -m "patches from the daemon"
+    - run: git -c user.name="AutoBot" -c user.email="kevin@littlejohn.id.au" commit -a -m "patches from the daemon"
     - run: git pull-request
