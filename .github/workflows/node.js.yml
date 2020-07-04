@@ -24,6 +24,19 @@ jobs:
     - run: npm ci
     - run: npm run build --if-present
     - run: npm test
+
+  update-dependencies:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [14.x]
+    steps:
+    - uses: actions/checkout@v2
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v1
+      with:
+        node-version: ${{ matrix.node-version }}
+    - run: npm update
     - run: pip install git-pull-request
     - run: git branch auto-patch
     - run: git -c user.name="AutoBot" -c user.email="kevin@littlejohn.id.au" commit -a -m "patches from the daemon"
