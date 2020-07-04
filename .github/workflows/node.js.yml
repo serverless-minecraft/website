@@ -17,6 +17,7 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
+    - uses: chrislennon/action-aws-cli@v1.1
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v1
       with:
@@ -25,23 +26,18 @@ jobs:
     - run: npm run build --if-present
     - run: npm test
 
-    - name: Deploy to S3
-      uses: actions/aws/cli@master
+    - name: Configure AWS Credentials
+      uses: aws-actions/configure-aws-credentials@v1
       with:
-        args: s3 sync ./build s3://mc.bofh.net.au/ --cache-control max-age=0
-      env:
-        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ap-southeast-2
 
-    # - run: aws s3 sync ./build s3://$domainName/ --cache-control max-age=0
-    # - name: Invalidate Cloudfront CDN
-    #   uses: actions/aws/cli@master
-    #   with:
-    #     args: cloudfront create-invalidation --distribution-id=$CLOUDFRONT_DISTRIBUTION_ID --paths '/*'
-    #   env:
-    #     AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-    #     AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-    #     CLOUDFRONT_DISTRIBUTION_ID: ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }}
+    - run: aws s3 sync ./build s3://mc.bofh.net.au/ --cache-control max-age=0
+    - name: Invalidate Cloudfront
+      env:
+        CLOUDFRONT_DISTRIBUTION_ID: ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }}
+    - run: aws cloudfront create-invalidation --distribution-id=$CLOUDFRONT_DISTRIBUTION_ID --paths '/*'
 
   update-dependencies:
     runs-on: ubuntu-latest
