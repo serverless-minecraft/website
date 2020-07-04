@@ -25,13 +25,13 @@ jobs:
     - run: npm run build --if-present
     - run: npm test
 
-    # - name: Deploy to S3
-    #   uses: actions/aws/cli@master
-    #   with:
-    #     args: s3 sync ./build s3://mc.bofh.net.au/ --cache-control max-age=0
-    #   env:
-    #     AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-    #     AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+    - name: Deploy to S3
+      uses: actions/aws/cli@master
+      with:
+        args: s3 sync ./build s3://mc.bofh.net.au/ --cache-control max-age=0
+      env:
+        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
     # - run: aws s3 sync ./build s3://$domainName/ --cache-control max-age=0
     # - name: Invalidate Cloudfront CDN
