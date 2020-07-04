@@ -26,12 +26,9 @@ jobs:
     - run: npm run build --if-present
     - run: npm test
 
-  update:
-    steps:
     - uses: stefanzweifel/git-auto-commit-action@v4
       with:
         # Required
         commit_message: Apply automatic changes
-
         # Optional branch to push to, defaults to the current branch
         branch: automated-update
