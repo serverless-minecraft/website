@@ -25,6 +25,24 @@ jobs:
     - run: npm run build --if-present
     - run: npm test
 
+    # - name: Deploy to S3
+    #   uses: actions/aws/cli@master
+    #   with:
+    #     args: s3 sync ./build s3://mc.bofh.net.au/ --cache-control max-age=0
+    #   env:
+    #     AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+    #     AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+    # - run: aws s3 sync ./build s3://$domainName/ --cache-control max-age=0
+    # - name: Invalidate Cloudfront CDN
+    #   uses: actions/aws/cli@master
+    #   with:
+    #     args: cloudfront create-invalidation --distribution-id=$CLOUDFRONT_DISTRIBUTION_ID --paths '/*'
+    #   env:
+    #     AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+    #     AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+    #     CLOUDFRONT_DISTRIBUTION_ID: ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }}
+
   update-dependencies:
     runs-on: ubuntu-latest
     strategy:
