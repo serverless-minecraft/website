@@ -5,6 +5,8 @@ A website for dashboard, on/off controls etc
 [![Total alerts](https://img.shields.io/lgtm/alerts/g/serverless-minecraft/website.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/serverless-minecraft/website/alerts/)
 
 This is very basic at the moment. Also built and deployed from GitHub actions.
+There is output in the build scripts that will point to things that should be
+upgraded.
 
 This project was bootstrapped with [Create React App](https://github.com/facebookincubator/create-react-app).
 
