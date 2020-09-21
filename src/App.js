@@ -95,7 +95,7 @@ class Servers extends Component {
               tasks: data.taskArns
             }).promise()
             .then(descs => {
-              this.setState({ running: descs.tasks.map(task => task.group.replace('-FARGATE', '').replace('task:', '').replace('family:', '')) });
+              this.setState({ running: descs.tasks.map(task => task.group.replace('-FARGATE', '').replace('-EC2', '').replace('task:', '').replace('family:', '')) });
             });
             ecs.listTaskDefinitionFamilies({ status: 'ACTIVE' }).promise()
               .then(data => this.setState({ available: data.families.map(family => family.replace('-FARGATE', '')) }))
