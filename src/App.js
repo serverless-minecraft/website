@@ -95,10 +95,10 @@ class Servers extends Component {
               tasks: data.taskArns
             }).promise()
             .then(descs => {
-              this.setState({ running: descs.tasks.map(task => task.group.replace('-FARGATE', '').replace('-EC2', '').replace('task:', '').replace('family:', '')) });
+              this.setState({ running: Array.from(new Set(descs.tasks.map(task => task.group.replace('-FARGATE', '').replace('-EC2', '').replace('task:', '').replace('family:', '')))) });
             });
             ecs.listTaskDefinitionFamilies({ status: 'ACTIVE' }).promise()
-              .then(data => this.setState({ available: data.families.map(family => family.replace('-FARGATE', '')) }))
+              .then(data => this.setState({ available: Array.from(new Set(data.families.map(family => family.replace('-FARGATE', '').replace('-EC2', ''))) }))
               .catch(error => this.setState({ error: error }));
           })
           .catch(error => this.setState({ error: error }));
