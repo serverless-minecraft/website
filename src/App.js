@@ -40,7 +40,7 @@ class Toggle extends React.Component {
         });
         ecs.runTask({
           cluster: 'minecraft-cluster',
-          taskDefinition: this.props.id + '-FARGATE',
+          taskDefinition: this.props.id,
           launchType: 'FARGATE',
           networkConfiguration: {
             awsvpcConfiguration: {
@@ -95,10 +95,10 @@ class Servers extends Component {
               tasks: data.taskArns
             }).promise()
             .then(descs => {
-              this.setState({ running: descs.tasks.map(task => task.group.replace('-FARGATE', '').replace('task:', '').replace('family:', '')) });
+              this.setState({ running: descs.tasks.map(task => task.group.replace('task:', '').replace('family:', '')) });
             });
             ecs.listTaskDefinitionFamilies({ status: 'ACTIVE' }).promise()
-              .then(data => this.setState({ available: data.families.map(family => family.replace('-FARGATE', '')) }))
+              .then(data => this.setState({ available: data.families }))
               .catch(error => this.setState({ error: error }));
           })
           .catch(error => this.setState({ error: error }));
