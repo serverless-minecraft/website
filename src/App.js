@@ -20,7 +20,7 @@ Amplify.configure({
 class Toggle extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {isToggleOn: props.running, buttonText: props.running ? 'RUNNING' : 'LAUNCH'};
+    this.state = {isToggleOn: props.running, buttonText: props.running ? 'RUNNING' : this.props.launchType};
 
     // This binding is necessary to make `this` work in the callback
     this.handleClick = this.handleClick.bind(this);
@@ -30,7 +30,7 @@ class Toggle extends React.Component {
     if (!this.state.isToggleOn) {
       this.setState(prevState => ({
         isToggleOn: true,
-        buttonText: 'LAUNCHING'
+        buttonText: this.props.launchType
       }));
       Auth.currentCredentials()
         .then(credentials => {
@@ -40,8 +40,8 @@ class Toggle extends React.Component {
         });
         ecs.runTask({
           cluster: 'minecraft-cluster',
-          taskDefinition: this.props.id + '-FARGATE',
-          launchType: 'FARGATE',
+          taskDefinition: this.props.id + '-' + this.props.launchType,
+          launchType: this.props.launchType,
           networkConfiguration: {
             awsvpcConfiguration: {
               subnets: ['subnet-041a86dd8c48083f1', 'subnet-08fdafbe8e4e2637c'],
@@ -113,7 +113,7 @@ class Servers extends Component {
       <div>
         Servers:<br />
         {this.state.available.map(family => {
-          return <div>{family} <Toggle id={family} running={this.state.running.some(item => family === item)} /></div>;
+          return <div>{family} <Toggle id={family} running={this.state.running.some(item => family === item)} launchType="FARGATE" /><Toggle id={family} running={this.state.running.som(item => family === item)} launchType="EC2" /></div>;
         })}
       </div>
     );
